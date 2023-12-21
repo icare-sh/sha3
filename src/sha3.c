@@ -132,12 +132,11 @@ int keccak_absorb(keccak_t * sha3, const void *in, size_t inlen, int rsiz)
 }
 
 /**
- * @brief Squeeze les données de sortie à partir de l'état interne d'un objet Keccak (sha3).
- *
- * Cette fonction squeeze les données de sortie à partir de l'état interne d'un
- * objet Keccak (sha3) en effectuant des opérations XOR avec les données de
- * sortie. Elle utilise la fonction `keccak_f` pour mettre à jour l'état interne
- * après chaque bloc de données squeeze.
+ * @brief Squeeze les données de sortie de l'état interne d'un objet Keccak (sha3).
+ * 
+ * Cette fonction squeeze les données de sortie de l'état interne d'un objet
+ * Keccak (sha3) en effectuant des opérations XOR avec les données de sortie.
+ * Elle utilise la fonction `keccak_f` pour mettre à jour l'état interne
  *
  * @param sha3   L'objet Keccak dans lequel squeeze les données.
  * @param out    Les données de sortie à squeeze.
@@ -162,20 +161,18 @@ void keccak_squeeze(keccak_t * sha3, void *out, size_t outlen, unsigned char del
 }
 
 /**
- * @brief Finalise l'état interne d'un objet Keccak (sha3).
+ * @brief Fonction générique pour calculer le hachage SHA-3.
+ * 
+ * Cette fonction générique calcule le hachage SHA-3 pour les données d'entrée
+ * en utilisant l'algorithme de hachage Keccak. Elle utilise les fonctions
+ * `keccak_init`, `keccak_absorb` et `keccak_squeeze` pour réaliser cette
+ * opération.
  *
- * Cette fonction finalise l'état interne d'un objet Keccak (sha3) en
- * effectuant des opérations XOR avec les données de sortie. Elle utilise la
- * fonction `keccak_f` pour mettre à jour l'état interne après chaque bloc de
- * données squeeze.
- *
- * @param sha3   L'objet Keccak à finaliser.
- * @param out    Les données de sortie à squeeze.
- * @param outlen La longueur des données de sortie.
+ * @param in     Les données d'entrée à hacher.
+ * @param inlen  La longueur des données d'entrée.
  * @param del    Le délimiteur à utiliser pour terminer le squeeze.
- * @param rsiz   La taille du bloc de traitement interne.
- * @param i_empty Le nombre d'octets restants dans le bloc de traitement interne
- *                (après l'absorption des données d'entrée).
+ * @param out    Le buffer de sortie pour le hachage SHA-3.
+ * @param outlen La longueur du hachage SHA-3 à calculer.
  */
 void * keccak(const void *in, size_t inlen, unsigned char del ,void *out, int outlen)
 {

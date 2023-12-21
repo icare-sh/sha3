@@ -43,6 +43,8 @@ Plusieurs fonctions de hachage SHA-3, telles que `sha3_224`, `sha3_256`, `sha3_3
     ./SHA3-256 -m 384 <fichier>
     ./SHA3-256 -m 512 <fichier>
 
+    ./SHA3-256 <fichier1> <fichier2>
+
 ## Nos difficultés lors du projet : 
 Nous avons eu un peu de mal à comprendre le bon fonctionnement de la fonction de sponge/squeeze au départ.
 

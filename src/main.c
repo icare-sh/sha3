@@ -56,13 +56,13 @@ static int readhex(uint8_t *buf, const char *str, int maxbytes)
 
 
 /**
- * @brief Traite un fichier binaire en le convertissant en une chaîne hexadécimale.
+ * @brief Traite un fichier en le convertissant en une chaîne hexadécimale.
  *
- * Cette fonction prend en entrée le chemin d'un fichier binaire, l'ouvre,
+ * Cette fonction prend en entrée le chemin d'un fichier, l'ouvre,
  * lit son contenu binaire, convertit les données en une chaîne hexadécimale
  * et retourne la chaîne résultante.
  *
- * @param binaryFilePath Le chemin du fichier binaire à traiter.
+ * @param binaryFilePath Le chemin du fichier à traiter.
  * @return Une chaîne hexadécimale représentant les données binaires du fichier.
  * @note Il est de la responsabilité de l'appelant de libérer la mémoire allouée
  *       pour la chaîne hexadécimale après utilisation.
@@ -162,15 +162,24 @@ int main(int argc, char ** argv){
 
     if (strcmp(argv[1], "-m") != 0 )
     {
-        path = malloc(strlen(argv[1]));
-        memcpy(path, argv[3], strlen(argv[3]));
-        hexData = processBinaryFile(argv[1]);
-        hexDataLen = strlen(hexData);
-        data = (uint8_t *)malloc(hexDataLen / 2);
-        readhex(data, hexData, hexDataLen / 2);
-
-        hash = (uint8_t *)malloc(32);
-        sha3_256(data, hexDataLen / 2, hash);
+        for (int i = 1; i < argc; i++)
+        {
+            path = malloc(strlen(argv[i]));
+            memcpy(path, argv[i], strlen(argv[i]));
+            hexData = processBinaryFile(argv[i]);
+            hexDataLen = strlen(hexData);
+            data = (uint8_t *)malloc(hexDataLen / 2);
+            readhex(data, hexData, hexDataLen / 2);
+            hash = (uint8_t *)malloc(32);
+            sha3_256(data, hexDataLen / 2, hash);
+            print_hash(path, hashType, hash);
+            printf("\n");
+            free(data);
+            free(hash);
+            free(hexData);
+            free(path); 
+        }
+        return 0;
     }
     else
     {
@@ -205,10 +214,8 @@ int main(int argc, char ** argv){
             return 1;
             break;
         }
+        print_hash(path, hashType, hash);
     }
-
-    print_hash(path, hashType, hash);
-
 
     free(data);
     free(hash);

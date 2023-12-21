@@ -39,7 +39,11 @@ void keccak_squeeze(keccak_t * sha3, void *out, size_t outlen, unsigned char del
 
 void * keccak(const void *in, size_t inlen, unsigned char del ,void *out, int outlen);
 
+
+void * sha3_224(const void *in, size_t inlen, void *out);
 void * sha3_256(const void *in, size_t inlen, void *out);
+void * sha3_384(const void *in, size_t inlen, void *out);
+void * sha3_512(const void *in, size_t inlen, void *out);
 
 
 

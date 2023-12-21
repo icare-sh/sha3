@@ -123,6 +123,14 @@ void * keccak(const void *in, size_t inlen, unsigned char del ,void *out, int ou
     return out;
 }
 
+void * sha3_224(const void *in, size_t inlen, void *out)
+{
+    uint8_t * h;
+    h = keccak(in, inlen, 0x06, out, 224 / 8);
+
+    return h;
+}
+
 void * sha3_256(const void *in, size_t inlen, void *out)
 {
     uint8_t * h;
@@ -130,3 +138,22 @@ void * sha3_256(const void *in, size_t inlen, void *out)
 
     return h;
 }
+
+
+void * sha3_384(const void *in, size_t inlen, void *out)
+{
+    uint8_t * h;
+    h = keccak(in, inlen, 0x06, out, 384 / 8);
+
+    return h;
+}
+
+void * sha3_512(const void *in, size_t inlen, void *out)
+{
+    uint8_t * h;
+    h = keccak(in, inlen, 0x06, out, 512 / 8);
+
+    return h;
+}
+
+

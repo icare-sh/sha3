@@ -134,7 +134,7 @@ void * sha3_224(const void *in, size_t inlen, void *out)
 void * sha3_256(const void *in, size_t inlen, void *out)
 {
     uint8_t * h;
-    h = keccak(in, inlen, 0x06, out, 256 / 8);
+    h = keccak(in, inlen, 0x06, out, 256 / 8); 
 
     return h;
 }

@@ -3,17 +3,6 @@
 #include <stdlib.h>
 #include "sha3.h"
 
-
-/**
- * @brief Convertit un caractère hexadécimal en entier.
- *
- * Cette fonction prend en entrée un caractère et renvoie la valeur
- * numérique correspondante pour un chiffre hexadécimal.
- *
- * @param ch Le caractère hexadécimal en entrée.
- * @return La valeur numérique correspondante ou -1 si le caractère
- *         n'est pas un chiffre hexadécimal valide.
- */
 static int hexdigit(char ch)
 {
     if (ch >= '0' && ch <= '9')
@@ -25,18 +14,6 @@ static int hexdigit(char ch)
     return -1;
 }
 
-/**
- * @brief Lit une chaîne hexadécimale et convertit en tableau d'octets.
- *
- * Cette fonction prend en entrée une chaîne hexadécimale et la convertit
- * en un tableau d'octets (uint8_t). Elle lit chaque paire de caractères
- * hexadécimaux de la chaîne et les convertit en une valeur numérique.
- *
- * @param buf      Le tableau d'octets en sortie où stocker les valeurs lues.
- * @param str      La chaîne hexadécimale en entrée.
- * @param maxbytes Le nombre maximal d'octets à lire et stocker dans buf.
- * @return Le nombre d'octets lus et stockés dans buf.
- */
 static int readhex(uint8_t *buf, const char *str, int maxbytes)
 {
     int i, h, l;
@@ -54,21 +31,7 @@ static int readhex(uint8_t *buf, const char *str, int maxbytes)
     return i;
 }
 
-
-/**
- * @brief Traite un fichier binaire en le convertissant en une chaîne hexadécimale.
- *
- * Cette fonction prend en entrée le chemin d'un fichier binaire, l'ouvre,
- * lit son contenu binaire, convertit les données en une chaîne hexadécimale
- * et retourne la chaîne résultante.
- *
- * @param binaryFilePath Le chemin du fichier binaire à traiter.
- * @return Une chaîne hexadécimale représentant les données binaires du fichier.
- * @note Il est de la responsabilité de l'appelant de libérer la mémoire allouée
- *       pour la chaîne hexadécimale après utilisation.
- */
 static char * processBinaryFile(const char *binaryFilePath) {
-    // Ouvre le fichier en mode lecture binaire
     FILE *file = fopen(binaryFilePath, "rb");
     if (!file) {
         perror("Error opening file");
@@ -85,47 +48,25 @@ static char * processBinaryFile(const char *binaryFilePath) {
     fread(binaryData, 1, fileSize, file);
     fclose(file);
 
-    // Alloue de la mémoire pour stocker les données hexadécimales
+    // Convert binary data to hexadecimal
     char *hexData = (char *)malloc(fileSize * 2 + 1); // Each byte becomes two hex characters
     for (int i = 0; i < fileSize; ++i) {
-        // Convertit chaque octet en deux caractères hexadécimaux et les concatène
         sprintf(hexData + i * 2, "%02X", (unsigned char)binaryData[i]);
     }
-    hexData[fileSize * 2] = '\0';// Ajoute le caractère de fin de chaîne
+    hexData[fileSize * 2] = '\0';
 
-    // Libère la mémoire allouée pour les données binaires
+    // Clean up
     free(binaryData);
     
     return hexData;
 }
 
-/**
- * @brief Affiche un message d'utilisation pour le programme.
- *
- * Cette fonction prend en entrée le nom du programme (progname) et affiche
- * un message d'utilisation indiquant comment utiliser le programme correctement.
- *
- * @param progname Le nom du programme.
- * @note Cette fonction provoque la sortie du programme avec le code de sortie 1.
- */
 static void usage(const char *progname)
 {
     fprintf(stderr, "Usage: %s [-m] <files>\n", progname);
     exit(1);
 }
 
-
-/**
- * @brief Affiche le hash d'un fichier avec son chemin, le type de hash et la valeur du hash.
- *
- * Cette fonction prend en entrée le chemin d'un fichier, le type de hash
- * (hashType) et la valeur du hash (hash). Elle affiche ces informations
- * au format "SHA3-256 <chemin du fichier> = <valeur du hash>".
- *
- * @param path      Le chemin du fichier.
- * @param hashType  Le type de hash à afficher.
- * @param hash      La valeur du hash à afficher.
- */
 static void print_hash(char * path, int hashType, uint8_t * hash)
 {
     printf("SHA3-256 %s = ", path);
@@ -136,16 +77,6 @@ static void print_hash(char * path, int hashType, uint8_t * hash)
     }
 }
 
-/**
- * @brief Fonction principale du programme.
- *
- * Cette fonction prend en entrée les arguments de la ligne de commande
- * et affiche le hash de chaque fichier passé en argument.
- *
- * @param argc Le nombre d'arguments de la ligne de commande.
- * @param argv Les arguments de la ligne de commande.
- * @return 0 si le programme s'est exécuté correctement, 1 sinon.
- */
 int main(int argc, char ** argv){
     if (argc < 2){
         usage(argv[0]);

@@ -74,38 +74,51 @@ void keccak_f(uint64_t A[25])
     }
 }
 
-void * keccak(const void *in, size_t inlen, unsigned char del ,void *out, int outlen)
+void keccak_init(keccak_t * sha3, int mdlen)
 {
-    uint64_t state[25];
-    uint8_t temp[200];
-    size_t rsiz;
+    memset(sha3, 0, sizeof(keccak_t));
+}
+
+int keccak_absorb(keccak_t * sha3, const void *in, size_t inlen, int rsiz)
+{
     size_t i;
+    const uint8_t *pin = in;
+    int j = 0;
 
-    rsiz = 200 - 2 * outlen;
-    int status = 0;
-    
-    for (i = 0; i < 25; i++) {
-        state[i] = 0;
-    }
-
-    size_t j = status;
-
-    for (int i = 0; i < inlen; i++) {
-        temp[j++] ^= ((const uint8_t *)in)[i];
-        if ( j >= rsiz) {
-            keccak_f(state);
+    for (i = 0; i < inlen; i++) {
+        sha3->state.b[j++] ^= pin[i];
+        if (j >= rsiz) {
+            keccak_f(sha3->state.q);
             j = 0;
         }
     }
-    status = j;
+    return j;
+}
 
-    temp[status] ^= del;
-    temp[rsiz - 1] ^= 0x80;
-    keccak_f(state);
+void keccak_squeeze(keccak_t * sha3, void *out, size_t outlen, unsigned char del, int rsiz, int i_empty)
+{
+    size_t i;
+    uint8_t *pout = out;
+    
+    sha3->state.b[i_empty] ^= del;
+    sha3->state.b[rsiz - 1] ^= 0x80;
+    keccak_f(sha3->state.q);
 
-    for (int i = 0; i < outlen; i++) {
-        ((uint8_t *)out)[i] = temp[i];
+    for (i = 0; i < outlen; i++) {
+        pout[i] = sha3->state.b[i];
     }
+}
+
+void * keccak(const void *in, size_t inlen, unsigned char del ,void *out, int outlen)
+{
+    keccak_t sha3;
+    int rsiz;
+    int i_empty = 0;
+    rsiz = 200 - 2 * outlen;
+
+    keccak_init(&sha3, outlen);
+    i_empty = keccak_absorb(&sha3, in, inlen, rsiz);
+    keccak_squeeze(&sha3, out, outlen, del, rsiz, i_empty);
 
     return out;
 }

@@ -1,5 +1,11 @@
 # Implementation de l'algorithme de hachage Keccak
 
+## Build
+
+Pour build il faut juste faire un make dans le root du projet.
+```c
+make
+```
 
 ## Membres de l'équipe
 
@@ -46,7 +52,7 @@ Plusieurs fonctions de hachage SHA-3, telles que `sha3_224`, `sha3_256`, `sha3_3
     ./SHA3-256 <fichier1> <fichier2>
 
 ## Nos difficultés lors du projet : 
-Nous avons eu un peu de mal à comprendre le bon fonctionnement de la fonction de sponge/squeeze au départ.
+Nous avons eu un peu de mal à comprendre le bon fonctionnement du sponge/squeeze au départ.
 
 L'algorithme proposé par [Keccak_team](https://keccak.team/keccak_specs_summary.html) ainsi que leur explication nous on bien aidé à comprendre la technique derriere keccak.
 

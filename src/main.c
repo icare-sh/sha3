@@ -1,51 +1,50 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "sha3.h"
 
-typedef uint64_t tKeccakLane;
-
-void xorLane(uint8_t *state, size_t x, size_t y, tKeccakLane lane) {
-    size_t index = x + 5 * y;
-    tKeccakLane *element = (tKeccakLane*)(state + sizeof(tKeccakLane) * index);
-    *element ^= lane;
-}
-
-static void xor64(uint8_t *x, uint64_t u)
+static int test_hexdigit(char ch)
 {
-    unsigned int i;
-
-    for(i=0; i<8; ++i) {
-        x[i] ^= u;
-        u >>= 8;
-    }
+    if (ch >= '0' && ch <= '9')
+        return  ch - '0';
+    if (ch >= 'A' && ch <= 'F')
+        return  ch - 'A' + 10;
+    if (ch >= 'a' && ch <= 'f')
+        return  ch - 'a' + 10;
+    return -1;
 }
 
-#define i(x, y) ((x)+5*(y))
+static int test_readhex(uint8_t *buf, const char *str, int maxbytes)
+{
+    int i, h, l;
 
-#define XORLane(x, y, lane)        xor64((uint8_t*)state+sizeof(tKeccakLane)*i(x, y), lane)
+    for (i = 0; i < maxbytes; i++) {
+        h = test_hexdigit(str[2 * i]);
+        if (h < 0)
+            return i;
+        l = test_hexdigit(str[2 * i + 1]);
+        if (l < 0)
+            return i;
+        buf[i] = (h << 4) + l; // transform to bytes
+    }
 
-int main() {
-    // Exemple d'utilisation
-    tKeccakLane state[5][5];  // Supposons que state soit un tableau bidimensionnel de type tKeccakLane
-    size_t x = 1, y = 4;     // Coordonnées (2, 3)
-    tKeccakLane lane = 0xFFFFFFFFFFFFFF;  // Valeur à XOR
+    return i;
+}
 
-    // Appel de la fonction simle
-    //xorLane((uint8_t*)state, x, y, lane);
+int main(int argc, char ** argv){
+    char str[] = "9F2FCC7C90DE090D6B87CD7E9718C1EA6CB21118FC2D5DE9F97E5DB6AC1E9C10";
+    uint8_t in [256];
+    uint8_t * hash;
+    int msg_len;
+    uint8_t  out[64];
+    memset(in, 0, sizeof(in));
+    memset(out, 0, sizeof(out));
+    msg_len = test_readhex(in , str, sizeof(in));
+    hash = sha3_256(in, msg_len, out);
+    
+    for (int i = 0; i < 64; i++){
+        printf("%02x", hash[i]);
+    }
 
-    //printf("%016lX\n", state[1][4]);
-
-    // Appel de la macro
-    XORLane(x, y, lane);
-
-    printf("%016lX\n", state[1][4]);
-
-    uint8_t *v = malloc(sizeof(uint64_t));
-    xor64(v, lane);
-
-    // print x
-    printf("%016lX\n", v);
-
-    // À ce stade, l'élément à la position (2, 3) dans le tableau a été XOR avec la valeur 'lane'.
     return 0;
 }

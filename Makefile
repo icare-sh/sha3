@@ -1,12 +1,9 @@
 CC = gcc
 CFLAGS = -Wall -g
-FILES = src/main.c
+FILES = src/main.c src/sha3.c
 
-sha3: sha3.o
-	$(CC) $(CFLAGS) -o $@ $^
-
-sha3.o: $(FILES)
-	$(CC) $(CFLAGS) -c $^ -o $@
+sha3: $(FILES)
+	$(CC) $(CFLAGS) -o sha3 $(FILES) -g
 
 clean:
 	rm -f *.o sha3

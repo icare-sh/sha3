@@ -3,7 +3,16 @@
 
 // KeccakRhoOffsets
 
-
+/**
+ * @brief Réalise une ronde de l'algorithme de hachage Keccak (f).
+ *
+ * Cette fonction met à jour l'état interne A en effectuant une ronde de
+ * l'algorithme de hachage Keccak (f). Les constantes spécifiques à Keccak,
+ * telles que les décalages (rho), les permutations (pi), les rotations (chi)
+ * et les constantes de ronde (iota), sont utilisées pour transformer l'état.
+ *
+ * @param A Le tableau représentant l'état interne de Keccak (25 uint64_t).
+ */
 void keccak_f(uint64_t A[25])
 {
     const unsigned int KeccakRhoOffsets[24] = {
@@ -37,6 +46,7 @@ void keccak_f(uint64_t A[25])
 
     uint64_t C[5], D;
 
+    // Boucle principale des 24 rondes de l'algorithme Keccak
     for (round = 0; round < 24; round++) {
         // θ step
         for (x = 0; x < 5; x++) {
@@ -74,11 +84,37 @@ void keccak_f(uint64_t A[25])
     }
 }
 
+/**
+ * @brief Initialise l'état interne d'un objet Keccak (sha3).
+ *
+ * Cette fonction initialise l'état interne d'un objet Keccak (sha3) en le
+ * remplissant de zéros. Elle utilise la fonction `memset` pour réaliser
+ * cette opération.
+ *
+ * @param sha3   L'objet Keccak à initialiser.
+ * @param mdlen  La longueur du message de hachage à utiliser.
+ */
 void keccak_init(keccak_t * sha3, int mdlen)
 {
     memset(sha3, 0, sizeof(keccak_t));
 }
 
+
+/**
+ * @brief Absorbe les données d'entrée dans l'état interne d'un objet Keccak (sha3).
+ *
+ * Cette fonction absorbe les données d'entrée dans l'état interne d'un objet
+ * Keccak (sha3) en effectuant des opérations XOR avec les données d'entrée.
+ * Elle utilise la fonction `keccak_f` pour mettre à jour l'état interne
+ * après chaque bloc de données absorbé.
+ *
+ * @param sha3   L'objet Keccak dans lequel absorber les données.
+ * @param in     Les données d'entrée à absorber.
+ * @param inlen  La longueur des données d'entrée.
+ * @param rsiz   La taille du bloc de traitement interne.
+ * @return Le nombre d'octets restants dans le bloc de traitement interne
+ *         (après l'absorption des données d'entrée).
+ */
 int keccak_absorb(keccak_t * sha3, const void *in, size_t inlen, int rsiz)
 {
     size_t i;
@@ -95,6 +131,22 @@ int keccak_absorb(keccak_t * sha3, const void *in, size_t inlen, int rsiz)
     return j;
 }
 
+/**
+ * @brief Squeeze les données de sortie à partir de l'état interne d'un objet Keccak (sha3).
+ *
+ * Cette fonction squeeze les données de sortie à partir de l'état interne d'un
+ * objet Keccak (sha3) en effectuant des opérations XOR avec les données de
+ * sortie. Elle utilise la fonction `keccak_f` pour mettre à jour l'état interne
+ * après chaque bloc de données squeeze.
+ *
+ * @param sha3   L'objet Keccak dans lequel squeeze les données.
+ * @param out    Les données de sortie à squeeze.
+ * @param outlen La longueur des données de sortie.
+ * @param del    Le délimiteur à utiliser pour terminer le squeeze.
+ * @param rsiz   La taille du bloc de traitement interne.
+ * @param i_empty Le nombre d'octets restants dans le bloc de traitement interne
+ *                (après l'absorption des données d'entrée).
+ */
 void keccak_squeeze(keccak_t * sha3, void *out, size_t outlen, unsigned char del, int rsiz, int i_empty)
 {
     size_t i;
@@ -109,6 +161,22 @@ void keccak_squeeze(keccak_t * sha3, void *out, size_t outlen, unsigned char del
     }
 }
 
+/**
+ * @brief Finalise l'état interne d'un objet Keccak (sha3).
+ *
+ * Cette fonction finalise l'état interne d'un objet Keccak (sha3) en
+ * effectuant des opérations XOR avec les données de sortie. Elle utilise la
+ * fonction `keccak_f` pour mettre à jour l'état interne après chaque bloc de
+ * données squeeze.
+ *
+ * @param sha3   L'objet Keccak à finaliser.
+ * @param out    Les données de sortie à squeeze.
+ * @param outlen La longueur des données de sortie.
+ * @param del    Le délimiteur à utiliser pour terminer le squeeze.
+ * @param rsiz   La taille du bloc de traitement interne.
+ * @param i_empty Le nombre d'octets restants dans le bloc de traitement interne
+ *                (après l'absorption des données d'entrée).
+ */
 void * keccak(const void *in, size_t inlen, unsigned char del ,void *out, int outlen)
 {
     keccak_t sha3;
@@ -123,6 +191,17 @@ void * keccak(const void *in, size_t inlen, unsigned char del ,void *out, int ou
     return out;
 }
 
+/**
+ * @brief Calcule le hachage SHA-3-224 pour les données d'entrée.
+ *
+ * Cette fonction utilise l'algorithme de hachage SHA-3-224 en appelant
+ * la fonction générique `keccak` avec les paramètres appropriés.
+ *
+ * @param in     Les données d'entrée à hacher.
+ * @param inlen  La longueur des données d'entrée.
+ * @param out    Le buffer de sortie pour le hachage SHA-3-224.
+ * @return Un pointeur vers le buffer de sortie contenant le hachage SHA-3-224.
+ */
 void * sha3_224(const void *in, size_t inlen, void *out)
 {
     uint8_t * h;
@@ -131,6 +210,18 @@ void * sha3_224(const void *in, size_t inlen, void *out)
     return h;
 }
 
+
+/**
+ * @brief Calcule le hachage SHA-3-256 pour les données d'entrée.
+ *
+ * Cette fonction utilise l'algorithme de hachage SHA-3-256 en appelant
+ * la fonction générique `keccak` avec les paramètres appropriés.
+ *
+ * @param in     Les données d'entrée à hacher.
+ * @param inlen  La longueur des données d'entrée.
+ * @param out    Le buffer de sortie pour le hachage SHA-3-256.
+ * @return Un pointeur vers le buffer de sortie contenant le hachage SHA-3-256.
+ */
 void * sha3_256(const void *in, size_t inlen, void *out)
 {
     uint8_t * h;
@@ -139,7 +230,17 @@ void * sha3_256(const void *in, size_t inlen, void *out)
     return h;
 }
 
-
+/**
+ * @brief Calcule le hachage SHA-3-384 pour les données d'entrée.
+ *
+ * Cette fonction utilise l'algorithme de hachage SHA-3-384 en appelant
+ * la fonction générique `keccak` avec les paramètres appropriés.
+ *
+ * @param in     Les données d'entrée à hacher.
+ * @param inlen  La longueur des données d'entrée.
+ * @param out    Le buffer de sortie pour le hachage SHA-3-384.
+ * @return Un pointeur vers le buffer de sortie contenant le hachage SHA-3-384.
+ */
 void * sha3_384(const void *in, size_t inlen, void *out)
 {
     uint8_t * h;
@@ -148,6 +249,17 @@ void * sha3_384(const void *in, size_t inlen, void *out)
     return h;
 }
 
+/**
+ * @brief Calcule le hachage SHA-3-512 pour les données d'entrée.
+ *
+ * Cette fonction utilise l'algorithme de hachage SHA-3-512 en appelant
+ * la fonction générique `keccak` avec les paramètres appropriés.
+ *
+ * @param in     Les données d'entrée à hacher.
+ * @param inlen  La longueur des données d'entrée.
+ * @param out    Le buffer de sortie pour le hachage SHA-3-512.
+ * @return Un pointeur vers le buffer de sortie contenant le hachage SHA-3-512.
+ */
 void * sha3_512(const void *in, size_t inlen, void *out)
 {
     uint8_t * h;

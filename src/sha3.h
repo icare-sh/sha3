@@ -31,12 +31,50 @@ typedef struct {
 */
 void keccak_f(uint64_t A[25]);
 
+
+/*
+    * keccak_init
+    * sha3: The object to be initialized
+    * mdlen: The length of the message digest
+    * 
+    * This function initializes the internal state of a Keccak object by filling it with zeros
+*/
 void keccak_init(keccak_t * sha3, int mdlen);
 
+/*
+    * keccak_absorb
+    * sha3: The object to be initialized
+    * in: The input message
+    * inlen: The length of the input message
+    * rsiz: The rate of the sponge function
+    * 
+    * This function absorbs the input message into the sponge function
+*/
 int keccak_absorb(keccak_t * sha3, const void *in, size_t inlen, int rsiz);
 
+/*
+    * keccak_squeeze
+    * sha3: The object to be initialized
+    * out: The output message
+    * outlen: The length of the output message
+    * del: The delimiter
+    * rsiz: The rate of the sponge function
+    * i_empty: The number of bytes left in the sponge function
+    * 
+    * This function squeezes the output message from the sponge function
+*/
 void keccak_squeeze(keccak_t * sha3, void *out, size_t outlen, unsigned char del, int rsiz, int i_empty);
 
+/*
+    * keccak
+    * in: The input message
+    * inlen: The length of the input message
+    * del: The delimiter
+    * out: The output message
+    * outlen: The length of the output message
+    * 
+    * This function performs the Keccak hash function on the input message
+*/
 void * keccak(const void *in, size_t inlen, unsigned char del ,void *out, int outlen);
 
 
